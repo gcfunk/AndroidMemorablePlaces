@@ -15,6 +15,9 @@ public class MainActivity extends Activity {
 
     ListView listView;
 
+    static ArrayList<String> places;
+    static ArrayAdapter arrayAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +25,11 @@ public class MainActivity extends Activity {
 
         listView = (ListView) findViewById(R.id.listView);
 
-        final ArrayList<String> places = new ArrayList<>();
+        places = new ArrayList<>();
 
         places.add("Add a new place...");
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, places);
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, places);
 
         listView.setAdapter(arrayAdapter);
 

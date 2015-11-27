@@ -48,6 +48,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .position(point)
                 .title(label)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        MainActivity.places.add(label);
+        MainActivity.arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
