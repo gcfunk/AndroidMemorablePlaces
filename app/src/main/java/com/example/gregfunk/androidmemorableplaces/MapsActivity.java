@@ -29,6 +29,7 @@ import java.util.Locale;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mMap;
+    private int location = -1;
 
     @Override
     public void onMapLongClick(LatLng point) {
@@ -51,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         MainActivity.places.add(label);
         MainActivity.arrayAdapter.notifyDataSetChanged();
+        MainActivity.locations.add(point);
     }
 
     @Override
@@ -66,7 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent i = getIntent();
-        Log.i("Location info", String.valueOf(i.getIntExtra("LocationInfo", -1)));
+        //Log.i("Location info", String.valueOf(i.getIntExtra("LocationInfo", -1)));
+        location = i.getIntExtra("LocationInfo", -1);
     }
 
     @Override
@@ -98,9 +101,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(this);
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
+        /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
+
+        if (location != -1 && location != 0) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.locations.get(location), 10));
+
+            mMap.addMarker(new MarkerOptions().position(MainActivity.locations.get(location)).title(MainActivity.places.get(location)));
+        }
     }
 
     @Override
