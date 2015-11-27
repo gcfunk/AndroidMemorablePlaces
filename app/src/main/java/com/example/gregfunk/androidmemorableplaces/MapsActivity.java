@@ -1,9 +1,14 @@
 package com.example.gregfunk.androidmemorableplaces;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -26,10 +31,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener, LocationListener {
 
     private GoogleMap mMap;
     private int location = -1;
+    LocationManager locationManager;
+    String provider;
 
     @Override
     public void onMapLongClick(LatLng point) {
@@ -70,6 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent i = getIntent();
         //Log.i("Location info", String.valueOf(i.getIntExtra("LocationInfo", -1)));
         location = i.getIntExtra("LocationInfo", -1);
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        provider = locationManager.getBestProvider(new Criteria(), false);
     }
 
     @Override
@@ -77,6 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                locationManager.removeUpdates(this);
                 this.finish();
                 return true;
         }
@@ -106,9 +117,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
         if (location != -1 && location != 0) {
+            locationManager.removeUpdates(this);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.locations.get(location), 10));
 
             mMap.addMarker(new MarkerOptions().position(MainActivity.locations.get(location)).title(MainActivity.places.get(location)));
+        } else {
+            locationManager.requestLocationUpdates(provider, 400, 1, this);
         }
     }
 
@@ -120,5 +134,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onLocationChanged(Location userLocation) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 10));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
