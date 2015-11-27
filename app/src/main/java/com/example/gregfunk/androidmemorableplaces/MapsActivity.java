@@ -2,6 +2,8 @@ package com.example.gregfunk.androidmemorableplaces;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -19,15 +21,32 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mMap;
 
     @Override
     public void onMapLongClick(LatLng point) {
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        String label = new Date().toString();
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+
+            if (listAddresses != null && listAddresses.size() > 0) {
+                label = listAddresses.get(0).getAddressLine(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         mMap.addMarker(new MarkerOptions()
                 .position(point)
-                .title("You are here")
+                .title(label)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
     }
 
